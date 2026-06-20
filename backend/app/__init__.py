@@ -13,7 +13,9 @@ def create_app():
     # Register blueprints
     from app.routes.health import health_bp
     from app.routes.data import data_bp
+    from app.routes.backtest import backtest_bp
     app.register_blueprint(health_bp)
     app.register_blueprint(data_bp)
+    app.register_blueprint(backtest_bp)
 
     return app

@@ -135,11 +135,17 @@ def run_backtest(config: dict) -> dict:
 
             equity_curve.append({"date": rebal_date.isoformat(), "value": round(capital, 2)})
 
+        from app.backtest.metrics import calculate_metrics, top_performers
+        metrics = calculate_metrics(equity_curve, initial_capital)
+        performers = top_performers(portfolio_log)
+
         return {
             "initial_capital": initial_capital,
             "final_capital": round(capital, 2),
             "equity_curve": equity_curve,
             "portfolio_log": portfolio_log,
+            **metrics,
+            **performers,
         }
 
     finally:
