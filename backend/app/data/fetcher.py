@@ -18,6 +18,9 @@ def fetch_prices(symbol: str, start: str, end: str) -> pd.DataFrame:
         df = _ticker(symbol).history(start=start, end=end, auto_adjust=True)
         if df.empty:
             return pd.DataFrame()
+        # yfinance >=1.0 may return MultiIndex columns; flatten to single level
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
         df = df[["Open", "High", "Low", "Close", "Volume"]].copy()
         df.columns = ["open", "high", "low", "close", "volume"]
         df["adjusted_close"] = df["close"]

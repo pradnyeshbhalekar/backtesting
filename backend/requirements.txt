@@ -3,7 +3,7 @@ Flask-CORS==4.0.1
 SQLAlchemy==2.0.30
 psycopg2-binary==2.9.9
 python-dotenv==1.0.1
-yfinance==0.2.40
+yfinance>=1.0.0
 pandas==2.2.2
 numpy==1.26.4
 requests==2.32.3
