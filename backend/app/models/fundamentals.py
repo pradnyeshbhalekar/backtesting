@@ -28,18 +28,18 @@ class StockFundamentals(Base):
     dividend_yield = Column(Float)
 
     # Profitability
-    roce = Column(Float)                # Return on Capital Employed (%)
-    roe = Column(Float)                 # Return on Equity (%)
-    roa = Column(Float)                 # Return on Assets (%)
-    net_profit_margin = Column(Float)   # (%)
-    operating_margin = Column(Float)    # (%)
-    gross_margin = Column(Float)        # (%)
+    roce = Column(Float)                
+    roe = Column(Float)                
+    roa = Column(Float)                
+    net_profit_margin = Column(Float)   
+    operating_margin = Column(Float) 
+    gross_margin = Column(Float)       
 
     # Income Statement (INR crores)
     revenue = Column(Float)
     ebitda = Column(Float)
     ebit = Column(Float)
-    pat = Column(Float)                 # Profit After Tax
+    pat = Column(Float)             
 
     # Balance Sheet (INR crores)
     total_assets = Column(Float)
