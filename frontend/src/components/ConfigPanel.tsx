@@ -8,11 +8,6 @@ const METRICS = [
   'operating_margin', 'revenue_growth_yoy', 'pat_growth_yoy', 'market_cap',
 ]
 
-const inputCls =
-  'w-full rounded border border-gray-300 bg-transparent px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100'
-
-const labelCls = 'block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1'
-
 interface Props {
   config: BacktestConfig
   onChange: (patch: Partial<BacktestConfig>) => void
@@ -40,32 +35,36 @@ export default function ConfigPanel({ config, onChange }: Props) {
     onChange({ ranking: (config.ranking ?? []).filter((_, idx) => idx !== i) })
   }
 
+  const divider = <div className="border-t border-gray-100 dark:border-white/8" />
+
   const formBody = (
     <div className="space-y-5 pt-4 lg:pt-0">
       {/* Date Range */}
       <section>
-        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Date Range</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <p className="section-label">Date Range</p>
+        <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className={labelCls}>Start Date</label>
-            <input type="date" className={inputCls} value={config.start_date}
+            <label className="field-label">Start</label>
+            <input type="date" className="input-base" value={config.start_date}
               onChange={e => onChange({ start_date: e.target.value })} />
           </div>
           <div>
-            <label className={labelCls}>End Date</label>
-            <input type="date" className={inputCls} value={config.end_date}
+            <label className="field-label">End</label>
+            <input type="date" className="input-base" value={config.end_date}
               onChange={e => onChange({ end_date: e.target.value })} />
           </div>
         </div>
       </section>
 
+      {divider}
+
       {/* Strategy */}
       <section>
-        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Strategy</h3>
-        <div className="space-y-3">
+        <p className="section-label">Strategy</p>
+        <div className="space-y-2">
           <div>
-            <label className={labelCls}>Rebalance Frequency</label>
-            <select className={inputCls} value={config.rebalance_frequency ?? 'quarterly'}
+            <label className="field-label">Rebalance Frequency</label>
+            <select className="input-base" value={config.rebalance_frequency ?? 'quarterly'}
               onChange={e => onChange({ rebalance_frequency: e.target.value as BacktestConfig['rebalance_frequency'] })}>
               <option value="monthly">Monthly</option>
               <option value="quarterly">Quarterly</option>
@@ -73,16 +72,16 @@ export default function ConfigPanel({ config, onChange }: Props) {
               <option value="yearly">Yearly</option>
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className={labelCls}>Portfolio Size</label>
-              <input type="number" min={1} className={inputCls}
+              <label className="field-label">Portfolio Size</label>
+              <input type="number" min={1} className="input-base"
                 value={config.portfolio_size ?? ''}
                 onChange={e => onChange({ portfolio_size: e.target.value ? parseInt(e.target.value) : undefined })} />
             </div>
             <div>
-              <label className={labelCls}>Initial Capital (₹)</label>
-              <input type="number" min={0} className={inputCls}
+              <label className="field-label">Capital (₹)</label>
+              <input type="number" min={0} className="input-base"
                 value={config.initial_capital ?? ''}
                 onChange={e => onChange({ initial_capital: e.target.value ? parseFloat(e.target.value) : undefined })} />
             </div>
@@ -90,13 +89,15 @@ export default function ConfigPanel({ config, onChange }: Props) {
         </div>
       </section>
 
+      {divider}
+
       {/* Sizing */}
       <section>
-        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Position Sizing</h3>
-        <div className="space-y-3">
+        <p className="section-label">Position Sizing</p>
+        <div className="space-y-2">
           <div>
-            <label className={labelCls}>Method</label>
-            <select className={inputCls} value={config.sizing_method ?? 'equal'}
+            <label className="field-label">Method</label>
+            <select className="input-base" value={config.sizing_method ?? 'equal'}
               onChange={e => onChange({ sizing_method: e.target.value as BacktestConfig['sizing_method'] })}>
               <option value="equal">Equal Weight</option>
               <option value="market_cap">Market Cap Weight</option>
@@ -105,8 +106,8 @@ export default function ConfigPanel({ config, onChange }: Props) {
           </div>
           {config.sizing_method === 'metric' && (
             <div>
-              <label className={labelCls}>Sizing Metric</label>
-              <select className={inputCls} value={config.sizing_metric ?? ''}
+              <label className="field-label">Sizing Metric</label>
+              <select className="input-base" value={config.sizing_metric ?? ''}
                 onChange={e => onChange({ sizing_metric: e.target.value })}>
                 <option value="">Select metric</option>
                 {METRICS.map(m => <option key={m} value={m}>{m}</option>)}
@@ -116,26 +117,30 @@ export default function ConfigPanel({ config, onChange }: Props) {
         </div>
       </section>
 
+      {divider}
+
       {/* Filters */}
       <section>
         <button onClick={() => setFiltersOpen(f => !f)}
-          className="flex w-full items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-          <span>Filters</span>
-          {filtersOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          className="flex w-full items-center justify-between group">
+          <p className="section-label mb-0 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">Filters</p>
+          {filtersOpen
+            ? <ChevronUp className="h-3.5 w-3.5 text-gray-400" />
+            : <ChevronDown className="h-3.5 w-3.5 text-gray-400" />}
         </button>
         {filtersOpen && (
-          <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             {[
-              ['market_cap_min', 'Market Cap Min (Cr)'],
-              ['market_cap_max', 'Market Cap Max (Cr)'],
+              ['market_cap_min', 'Mkt Cap Min (Cr)'],
+              ['market_cap_max', 'Mkt Cap Max (Cr)'],
               ['roce_min', 'ROCE Min (%)'],
               ['roe_min', 'ROE Min (%)'],
               ['pe_max', 'PE Max'],
               ['pat_min', 'PAT Min (Cr)'],
             ].map(([key, label]) => (
               <div key={key}>
-                <label className={labelCls}>{label}</label>
-                <input type="number" className={inputCls}
+                <label className="field-label">{label}</label>
+                <input type="number" className="input-base"
                   value={(config.filters as Record<string, number | undefined> | undefined)?.[key] ?? ''}
                   onChange={e => patchFilter(key, e.target.value)} />
               </div>
@@ -144,29 +149,32 @@ export default function ConfigPanel({ config, onChange }: Props) {
         )}
       </section>
 
+      {divider}
+
       {/* Ranking */}
       <section>
-        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">Ranking Rules</h3>
+        <p className="section-label">Ranking Rules</p>
         <div className="space-y-2">
           {(config.ranking ?? []).map((rule, i) => (
             <div key={i} className="flex items-center gap-2">
-              <select className={`${inputCls} flex-1`} value={rule.metric}
+              <select className="input-base flex-1" value={rule.metric}
                 onChange={e => updateRanking(i, { metric: e.target.value })}>
                 {METRICS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
-              <label className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+              <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 select-none">
                 <input type="checkbox" checked={rule.ascending}
-                  onChange={e => updateRanking(i, { ascending: e.target.checked })} />
+                  onChange={e => updateRanking(i, { ascending: e.target.checked })}
+                  className="accent-blue-500" />
                 Asc
               </label>
               <button onClick={() => removeRanking(i)}
-                className="text-gray-400 hover:text-red-500">
+                className="shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/40 transition-colors">
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
             </div>
           ))}
           <button onClick={addRanking}
-            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400">
+            className="flex items-center gap-1.5 rounded-lg border border-dashed border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-500 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/40 transition-colors w-full justify-center">
             <Plus className="h-3.5 w-3.5" /> Add Rule
           </button>
         </div>
@@ -175,17 +183,16 @@ export default function ConfigPanel({ config, onChange }: Props) {
   )
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+    <div className="card">
       {/* Mobile toggle */}
       <button
         className="flex w-full items-center justify-between lg:hidden"
         onClick={() => setOpen(o => !o)}
       >
         <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Configuration</span>
-        {open ? <ChevronUp className="h-4 w-4 text-gray-500" /> : <ChevronDown className="h-4 w-4 text-gray-500" />}
+        {open ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
       </button>
 
-      {/* Always visible on lg+ */}
       <div className={`${open ? 'block' : 'hidden'} lg:block`}>
         <h2 className="hidden text-sm font-semibold text-gray-900 dark:text-gray-100 lg:block">Configuration</h2>
         {formBody}

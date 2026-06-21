@@ -12,7 +12,7 @@ function fmtCurrency(n: number) {
 
 function Card({ label, value, colorClass }: { label: string; value: string; colorClass?: string }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900">
+    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-zinc-950">
       <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
       <p className={`mt-1 text-2xl font-semibold ${colorClass ?? 'text-gray-900 dark:text-gray-100'}`}>{value}</p>
     </div>
@@ -30,7 +30,7 @@ export default function SummaryCards({ result }: Props) {
       <Card label="Sharpe Ratio" value={fmt(result.sharpe_ratio)} />
       <Card label="Max Drawdown" value={`${fmt(result.max_drawdown_pct)}%`} colorClass={neg} />
       <Card label="Volatility" value={`${fmt(result.volatility_pct)}%`} />
-      <div className="col-span-2 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900 md:col-span-3 lg:col-span-5 lg:hidden xl:block xl:col-span-5">
+      <div className="col-span-2 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-zinc-950 md:col-span-3 lg:col-span-5 lg:hidden xl:block xl:col-span-5">
         <div className="flex flex-wrap gap-6 text-sm">
           <div>
             <span className="text-gray-500 dark:text-gray-400">Initial Capital: </span>

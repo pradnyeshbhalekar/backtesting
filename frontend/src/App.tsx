@@ -61,16 +61,16 @@ export default function App() {
   }, [config])
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-black dark:text-gray-100">
       <Header dark={dark} onToggle={toggle} />
       <main className="mx-auto max-w-screen-xl px-4 py-6 lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 xl:grid-cols-[320px_1fr]">
         {/* Config sidebar */}
-        <div className="lg:sticky lg:top-20 lg:self-start">
+        <div className="lg:sticky lg:top-20 lg:self-start space-y-3">
           <ConfigPanel config={config} onChange={handleChange} />
           <button
             onClick={handleRun}
             disabled={loading || !config.start_date || !config.end_date}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-500 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading
               ? <><Loader2 className="h-4 w-4 animate-spin" /> Running...</>
@@ -81,18 +81,22 @@ export default function App() {
         {/* Results area */}
         <div className="mt-6 lg:mt-0">
           {error && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-400">
               {error}
             </div>
           )}
-          {result ? (
+          {loading ? (
+            <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-gray-300 text-gray-400 dark:border-white/10">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              <span className="text-sm">Running backtest...</span>
+            </div>
+          ) : result ? (
             <Results result={result} dark={dark} />
           ) : (
-            !loading && (
-              <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-gray-300 text-sm text-gray-400 dark:border-gray-700">
-                Configure and run a backtest to see results
-              </div>
-            )
+            <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 text-gray-400 dark:border-white/10">
+              <Play className="h-8 w-8 opacity-30" />
+              <span className="text-sm">Configure and run a backtest to see results</span>
+            </div>
           )}
         </div>
       </main>

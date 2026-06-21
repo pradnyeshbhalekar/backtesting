@@ -51,6 +51,7 @@ export interface BacktestResult {
   max_drawdown_pct: number
   volatility_pct: number
   equity_curve: { date: string; value: number }[]
+  benchmark_curve?: { date: string; value: number }[]
   drawdown_series: { date: string; drawdown: number }[]
   portfolio_log: RebalancePeriod[]
   top_winners: Performer[]

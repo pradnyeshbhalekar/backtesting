@@ -8,11 +8,11 @@ export default function PortfolioLog({ log }: Props) {
   const [openIdx, setOpenIdx] = useState<number | null>(null)
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950">
-      <div className="border-b border-gray-200 p-4 dark:border-gray-800">
+    <div className="rounded-xl border border-gray-200 bg-white dark:border-white/10 dark:bg-zinc-950">
+      <div className="border-b border-gray-100 p-4 dark:border-white/10">
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Portfolio Log</h3>
       </div>
-      <div className="divide-y divide-gray-100 dark:divide-gray-900">
+      <div className="divide-y divide-gray-100 dark:divide-white/8">
         {log.map((period, i) => {
           const isOpen = openIdx === i
           const ret = period.portfolio_return_pct
@@ -22,7 +22,7 @@ export default function PortfolioLog({ log }: Props) {
             <div key={i}>
               <button
                 onClick={() => setOpenIdx(isOpen ? null : i)}
-                className="flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
+                className="flex w-full items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-white/5"
               >
                 <div className="flex items-center gap-2">
                   {isOpen ? <ChevronDown className="h-3.5 w-3.5 text-gray-400" /> : <ChevronRight className="h-3.5 w-3.5 text-gray-400" />}
@@ -36,7 +36,7 @@ export default function PortfolioLog({ log }: Props) {
                 </div>
               </button>
               {isOpen && (
-                <div className="overflow-x-auto border-t border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+                <div className="overflow-x-auto border-t border-gray-100 bg-gray-50 dark:border-white/8 dark:bg-white/5">
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="border-b border-gray-200 dark:border-gray-800">

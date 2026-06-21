@@ -12,7 +12,7 @@ function Table({ title, data, positive }: TableProps) {
   const colorCls = positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
+    <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-white/10 dark:bg-zinc-950">
       <div className="mb-3 flex items-center gap-2">
         <Icon className={`h-4 w-4 ${colorCls}`} />
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
