@@ -33,7 +33,7 @@ function sanitize(cfg: BacktestConfig): BacktestConfig {
       out[k] = v
     }
   }
-  return out as BacktestConfig
+  return out as unknown as BacktestConfig
 }
 
 export default function App() {

@@ -1,5 +1,9 @@
 import '../lib/chartDefaults'
 import { Line } from 'react-chartjs-2'
+import type { ChartDataset, Point } from 'chart.js'
+
+type TimePoint = { x: string; y: number }
+type LineDataset = ChartDataset<'line', (number | Point | TimePoint | null)[]>
 
 interface Props {
   data: { date: string; value: number }[]
@@ -22,7 +26,7 @@ export default function EquityChart({ data, benchmark, dark }: Props) {
   const tooltipBg = dark ? '#18181b' : '#ffffff'
   const tooltipBorder = dark ? '#3f3f46' : '#e5e7eb'
 
-  const datasets: object[] = [
+  const datasets: LineDataset[] = [
     {
       label: 'Strategy',
       data: data.map(d => ({ x: d.date, y: d.value })),
