@@ -2,11 +2,25 @@ import { useState } from 'react'
 import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-react'
 import type { BacktestConfig, RankingRule } from '../types'
 
-const METRICS = [
-  'roe', 'roce', 'roa', 'pe_ratio', 'pb_ratio', 'pat', 'revenue',
-  'ebitda', 'total_debt', 'free_cash_flow', 'net_profit_margin',
-  'operating_margin', 'revenue_growth_yoy', 'pat_growth_yoy', 'market_cap',
+const METRICS: { value: string; label: string }[] = [
+  { value: 'roe',               label: 'ROE' },
+  { value: 'roce',              label: 'ROCE' },
+  { value: 'roa',               label: 'ROA' },
+  { value: 'pe_ratio',          label: 'P/E Ratio' },
+  { value: 'pb_ratio',          label: 'P/B Ratio' },
+  { value: 'pat',               label: 'PAT' },
+  { value: 'revenue',           label: 'Revenue' },
+  { value: 'ebitda',            label: 'EBITDA' },
+  { value: 'total_debt',        label: 'Total Debt' },
+  { value: 'free_cash_flow',    label: 'Free Cash Flow' },
+  { value: 'net_profit_margin', label: 'Net Profit Margin' },
+  { value: 'operating_margin',  label: 'Operating Margin' },
+  { value: 'revenue_growth_yoy',label: 'Revenue Growth YoY' },
+  { value: 'pat_growth_yoy',    label: 'PAT Growth YoY' },
+  { value: 'market_cap',        label: 'Market Cap' },
 ]
+
+const METRIC_VALUES = METRICS.map(m => m.value)
 
 interface Props {
   config: BacktestConfig
@@ -23,7 +37,9 @@ export default function ConfigPanel({ config, onChange }: Props) {
   }
 
   const addRanking = () => {
-    onChange({ ranking: [...(config.ranking ?? []), { metric: 'roe', ascending: false }] })
+    const used = new Set((config.ranking ?? []).map(r => r.metric))
+    const next = METRIC_VALUES.find(m => !used.has(m)) ?? METRIC_VALUES[0]
+    onChange({ ranking: [...(config.ranking ?? []), { metric: next, ascending: false }] })
   }
 
   const updateRanking = (i: number, patch: Partial<RankingRule>) => {
@@ -110,7 +126,7 @@ export default function ConfigPanel({ config, onChange }: Props) {
               <select className="input-base" value={config.sizing_metric ?? ''}
                 onChange={e => onChange({ sizing_metric: e.target.value })}>
                 <option value="">Select metric</option>
-                {METRICS.map(m => <option key={m} value={m}>{m}</option>)}
+                {METRICS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
               </select>
             </div>
           )}
@@ -155,27 +171,57 @@ export default function ConfigPanel({ config, onChange }: Props) {
       <section>
         <p className="section-label">Ranking Rules</p>
         <div className="space-y-2">
-          {(config.ranking ?? []).map((rule, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <select className="input-base flex-1" value={rule.metric}
-                onChange={e => updateRanking(i, { metric: e.target.value })}>
-                {METRICS.map(m => <option key={m} value={m}>{m}</option>)}
-              </select>
-              <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 select-none">
-                <input type="checkbox" checked={rule.ascending}
-                  onChange={e => updateRanking(i, { ascending: e.target.checked })}
-                  className="accent-blue-500" />
-                Asc
-              </label>
-              <button onClick={() => removeRanking(i)}
-                className="shrink-0 rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/40 transition-colors">
-                <Trash2 className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          ))}
-          <button onClick={addRanking}
-            className="flex items-center gap-1.5 rounded-lg border border-dashed border-blue-300 px-3 py-1.5 text-xs font-medium text-blue-500 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950/40 transition-colors w-full justify-center">
-            <Plus className="h-3.5 w-3.5" /> Add Rule
+          {(config.ranking ?? []).map((rule, i) => {
+            const usedByOthers = new Set((config.ranking ?? []).filter((_, idx) => idx !== i).map(r => r.metric))
+            const available = METRICS.filter(m => !usedByOthers.has(m.value))
+            return (
+              <div key={i} className="rounded-lg border border-gray-200 bg-gray-50 p-2.5 dark:border-white/10 dark:bg-white/5">
+                <div className="flex items-center justify-between gap-2">
+                  <select
+                    className="input-base flex-1"
+                    value={rule.metric}
+                    onChange={e => updateRanking(i, { metric: e.target.value })}
+                  >
+                    {available.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+                  </select>
+                  <button
+                    onClick={() => removeRanking(i)}
+                    className="shrink-0 rounded p-1 text-gray-300 hover:bg-red-50 hover:text-red-500 dark:text-gray-600 dark:hover:bg-red-950/40 transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                <div className="mt-2 flex gap-1">
+                  <button
+                    onClick={() => updateRanking(i, { ascending: false })}
+                    className={`flex-1 rounded py-1 text-xs font-medium transition-colors ${
+                      !rule.ascending
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-white/8 dark:text-gray-400 dark:hover:bg-white/12'
+                    }`}
+                  >
+                    High → Low
+                  </button>
+                  <button
+                    onClick={() => updateRanking(i, { ascending: true })}
+                    className={`flex-1 rounded py-1 text-xs font-medium transition-colors ${
+                      rule.ascending
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-white/8 dark:text-gray-400 dark:hover:bg-white/12'
+                    }`}
+                  >
+                    Low → High
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+          <button
+            onClick={addRanking}
+            disabled={(config.ranking ?? []).length >= METRICS.length}
+            className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors mt-1 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Plus className="h-3.5 w-3.5" /> Add rule
           </button>
         </div>
       </section>
