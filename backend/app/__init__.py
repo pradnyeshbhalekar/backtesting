@@ -1,10 +1,12 @@
+import os
 from flask import Flask
 from flask_cors import CORS
 
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    allowed_origins = os.environ.get("FRONTEND_URL", "http://localhost:5173")
+    CORS(app, origins=[allowed_origins])
 
     # Create all tables on startup
     from app.config.db import init_db
