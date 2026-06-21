@@ -54,10 +54,10 @@ export default function PortfolioLog({ log }: Props) {
       </div>
 
       {/* Column labels */}
-      <div className="grid grid-cols-[1fr_auto_auto_auto] gap-4 border-b border-gray-100 px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:border-white/8">
+      <div className="grid grid-cols-[1fr_auto_auto] gap-2 border-b border-gray-100 px-4 py-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:border-white/8 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-4">
         <span>Period start</span>
-        <span className="text-right">Period return</span>
-        <span className="text-right">Capital after</span>
+        <span className="text-right">Return</span>
+        <span className="hidden text-right sm:block">Capital after</span>
         <span className="w-4" />
       </div>
 
@@ -73,18 +73,21 @@ export default function PortfolioLog({ log }: Props) {
             <div key={globalIdx}>
               <button
                 onClick={() => setOpenIdx(isOpen ? null : globalIdx)}
-                className="grid w-full grid-cols-[1fr_auto_auto_auto] items-center gap-4 px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-white/5"
+                className="grid w-full grid-cols-[1fr_auto_auto] items-center gap-2 px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-white/5 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-4"
               >
-                <div className="flex items-center gap-2 text-left">
-                  <span className="font-medium text-gray-800 dark:text-gray-100">{fmtDate(period.rebalance_date)}</span>
-                  <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400 dark:bg-white/8">
-                    {period.holdings.length} stocks
-                  </span>
+                <div className="min-w-0 text-left">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="font-medium text-gray-800 dark:text-gray-100">{fmtDate(period.rebalance_date)}</span>
+                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-400 dark:bg-white/8">
+                      {period.holdings.length} stocks
+                    </span>
+                  </div>
+                  <span className="mt-0.5 block text-xs text-gray-400 sm:hidden">{fmtINR(period.capital_after)}</span>
                 </div>
                 <span className={`text-right font-semibold tabular-nums ${retCls}`}>
                   {ret >= 0 ? '+' : ''}{ret.toFixed(2)}%
                 </span>
-                <span className="text-right tabular-nums text-gray-500 dark:text-gray-400">
+                <span className="hidden text-right tabular-nums text-gray-500 dark:text-gray-400 sm:block">
                   {fmtINR(period.capital_after)}
                 </span>
                 {isOpen
@@ -94,13 +97,13 @@ export default function PortfolioLog({ log }: Props) {
 
               {isOpen && (
                 <div className="overflow-x-auto border-t border-gray-100 bg-gray-50 dark:border-white/8 dark:bg-white/[0.03]">
-                  <table className="w-full text-xs">
+                  <table className="w-full min-w-[280px] text-xs">
                     <thead>
                       <tr className="border-b border-gray-200 dark:border-white/8">
-                        <th className="px-4 py-2 text-left font-medium text-gray-400">#</th>
-                        <th className="px-4 py-2 text-left font-medium text-gray-400">Symbol</th>
-                        <th className="px-4 py-2 text-right font-medium text-gray-400">Weight</th>
-                        <th className="px-4 py-2 text-right font-medium text-gray-400">Period Return</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-400">#</th>
+                        <th className="px-3 py-2 text-left font-medium text-gray-400">Symbol</th>
+                        <th className="px-3 py-2 text-right font-medium text-gray-400">Weight</th>
+                        <th className="px-3 py-2 text-right font-medium text-gray-400">Return</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -109,10 +112,10 @@ export default function PortfolioLog({ log }: Props) {
                         .sort((a, b) => b.return_pct - a.return_pct)
                         .map((h, hi) => (
                           <tr key={h.symbol} className="border-b border-gray-100 last:border-0 dark:border-white/5">
-                            <td className="px-4 py-1.5 text-gray-300 dark:text-gray-600">{hi + 1}</td>
-                            <td className="px-4 py-1.5 font-mono font-semibold text-gray-800 dark:text-gray-100">{h.symbol}</td>
-                            <td className="px-4 py-1.5 text-right text-gray-500 dark:text-gray-400">{(h.weight * 100).toFixed(1)}%</td>
-                            <td className={`px-4 py-1.5 text-right font-medium ${h.return_pct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            <td className="px-3 py-1.5 text-gray-300 dark:text-gray-600">{hi + 1}</td>
+                            <td className="px-3 py-1.5 font-mono font-semibold text-gray-800 dark:text-gray-100">{h.symbol}</td>
+                            <td className="px-3 py-1.5 text-right text-gray-500 dark:text-gray-400">{(h.weight * 100).toFixed(1)}%</td>
+                            <td className={`px-3 py-1.5 text-right font-medium ${h.return_pct >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                               {h.return_pct >= 0 ? '+' : ''}{h.return_pct.toFixed(2)}%
                             </td>
                           </tr>

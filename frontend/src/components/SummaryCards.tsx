@@ -14,7 +14,7 @@ function Card({ label, value, colorClass }: { label: string; value: string; colo
   return (
     <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-white/10 dark:bg-zinc-950">
       <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-      <p className={`mt-1 text-2xl font-semibold ${colorClass ?? 'text-gray-900 dark:text-gray-100'}`}>{value}</p>
+      <p className={`mt-1 text-xl font-semibold sm:text-2xl ${colorClass ?? 'text-gray-900 dark:text-gray-100'}`}>{value}</p>
     </div>
   )
 }
