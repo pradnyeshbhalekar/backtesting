@@ -3,6 +3,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 import pandas as pd
+import yfinance as yf
 from sqlalchemy import text
 
 from app.config.db import SessionLocal
@@ -75,6 +76,33 @@ def _period_returns(prices_df: pd.DataFrame, symbols: list[str], start: date, en
     return pd.Series(returns)
 
 
+def _nifty50_curve(start: date, end: date, initial_capital: float, rebalance_dates: list[date]) -> list[dict]:
+    """Fetch ^NSEI and build an equity curve at each rebalance date."""
+    try:
+        df = yf.download("^NSEI", start=start.isoformat(), end=end.isoformat(), auto_adjust=True, progress=False)
+        if df.empty:
+            return []
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+        df.index = pd.to_datetime(df.index).date
+        close = df["Close"].dropna()
+        if close.empty:
+            return []
+
+        base = close.iloc[0]
+        curve = []
+        for d in rebalance_dates:
+            # find the closest available trading date
+            avail = close.index[close.index >= d]
+            price = close.loc[avail[0]] if len(avail) else close.iloc[-1]
+            value = round(float(initial_capital * price / base), 2)
+            curve.append({"date": d.isoformat(), "value": value})
+        return curve
+    except Exception as e:
+        logger.warning("Nifty 50 benchmark fetch failed: %s", e)
+        return []
+
+
 def run_backtest(config: dict) -> dict:
     start = date.fromisoformat(config["start_date"])
     end = date.fromisoformat(config["end_date"])
@@ -83,7 +111,7 @@ def run_backtest(config: dict) -> dict:
     initial_capital = float(config.get("initial_capital", 1_000_000))
     filters = config.get("filters", {})
     ranking = config.get("ranking", [{"metric": "roe", "ascending": False}])
-    sizing_method = config.get("sizing", "equal")
+    sizing_method = config.get("sizing_method", config.get("sizing", "equal"))
     sizing_metric = config.get("sizing_metric")
 
     rebalance_dates = _rebalance_dates(start, end, frequency)
@@ -96,18 +124,19 @@ def run_backtest(config: dict) -> dict:
 
         fundamentals = _load_fundamentals(db)
         capital = initial_capital
-        equity_curve = []
+        # Anchor equity curve at the start with initial capital
+        equity_curve = [{"date": start.isoformat(), "value": round(capital, 2)}]
         portfolio_log = []
 
         for i, rebal_date in enumerate(rebalance_dates):
             next_date = rebalance_dates[i + 1] if i + 1 < len(rebalance_dates) else end
             if fundamentals.empty:
-                equity_curve.append({"date": rebal_date.isoformat(), "value": round(capital, 2)})
+                equity_curve.append({"date": next_date.isoformat(), "value": round(capital, 2)})
                 continue
 
             filtered = apply_filters(fundamentals, filters)
             if filtered.empty:
-                equity_curve.append({"date": rebal_date.isoformat(), "value": round(capital, 2)})
+                equity_curve.append({"date": next_date.isoformat(), "value": round(capital, 2)})
                 continue
 
             selected = rank_stocks(filtered, ranking, portfolio_size)
@@ -133,16 +162,19 @@ def run_backtest(config: dict) -> dict:
                 ],
             })
 
-            equity_curve.append({"date": rebal_date.isoformat(), "value": round(capital, 2)})
+            # Each equity curve point is dated at the END of the period (next_date)
+            equity_curve.append({"date": next_date.isoformat(), "value": round(capital, 2)})
 
         from app.backtest.metrics import calculate_metrics, top_performers
         metrics = calculate_metrics(equity_curve, initial_capital)
         performers = top_performers(portfolio_log)
+        benchmark = _nifty50_curve(start, end, initial_capital, rebalance_dates)
 
         return {
             "initial_capital": initial_capital,
             "final_capital": round(capital, 2),
             "equity_curve": equity_curve,
+            "benchmark_curve": benchmark,
             "portfolio_log": portfolio_log,
             **metrics,
             **performers,
