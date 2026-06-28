@@ -28,6 +28,8 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
 
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<Date>(selected ?? new Date(today.getFullYear(), today.getMonth(), 1))
+  const [dropUp, setDropUp] = useState(false)
+  const [alignRight, setAlignRight] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -37,6 +39,15 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
+
+  useEffect(() => {
+    if (!open || !ref.current) return
+    const rect = ref.current.getBoundingClientRect()
+    const calendarHeight = 300
+    const calendarWidth = 256
+    setDropUp(rect.bottom + calendarHeight > window.innerHeight)
+    setAlignRight(rect.left + calendarWidth > window.innerWidth)
+  }, [open])
 
   const year = view.getFullYear()
   const month = view.getMonth()
@@ -95,7 +106,10 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-30 mt-1 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-zinc-700 dark:bg-zinc-800 animate-fade-in">
+        <div className={`absolute z-50 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-zinc-700 dark:bg-zinc-800 animate-fade-in
+          ${dropUp ? 'bottom-full mb-1' : 'top-full mt-1'}
+          ${alignRight ? 'right-0' : 'left-0'}
+        `}>
           {/* Month nav */}
           <div className="mb-3 flex items-center justify-between">
             <button
