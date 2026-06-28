@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: qode-backtest-api
+    runtime: python
+    rootDir: backend
+    pythonVersion: "3.11"
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: FLASK_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://backtest-web.onrender.com
+    healthCheckPath: /health

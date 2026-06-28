@@ -10,6 +10,23 @@
     color-scheme: dark;
   }
 
+  /* Smooth theme transitions — exclude transform/opacity so CSS keyframe animations aren't overridden */
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+  }
+  /* Splash elements use keyframe animations — don't let the global transition override them */
+  .splash-candle-1, .splash-candle-2, .splash-candle-3,
+  .splash-wick-1, .splash-wick-2, .splash-wick-3,
+  .splash-wordmark, .splash-tagline {
+    transition: none !important;
+  }
+  /* Don't animate transforms/opacity globally (breaks animations) */
+  .no-theme-transition, .no-theme-transition * {
+    transition: none !important;
+  }
+
   select option {
     @apply bg-white text-gray-900;
   }
@@ -26,17 +43,80 @@
   }
 }
 
+@layer utilities {
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.25s ease forwards;
+  }
+
+  /* Splash — candle rise from bottom */
+  @keyframes candle-rise {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+  }
+  @keyframes wick-appear {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes splash-fade-up {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .splash-candle-1 {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: candle-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+  .splash-candle-2 {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: candle-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+  }
+  .splash-candle-3 {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    animation: candle-rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+  }
+  .splash-wick-1 {
+    opacity: 0;
+    animation: wick-appear 0.2s ease 0.45s forwards;
+  }
+  .splash-wick-2 {
+    opacity: 0;
+    animation: wick-appear 0.2s ease 0.6s forwards;
+  }
+  .splash-wick-3 {
+    opacity: 0;
+    animation: wick-appear 0.2s ease 0.75s forwards;
+  }
+  .splash-wordmark {
+    opacity: 0;
+    animation: splash-fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.6s forwards;
+  }
+  .splash-tagline {
+    opacity: 0;
+    animation: splash-fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+  }
+}
+
 @layer components {
   .card {
-    @apply rounded-xl border border-gray-200 bg-white p-4 dark:border-white/10 dark:bg-zinc-950;
+    @apply rounded-xl border border-gray-200 bg-white p-4 dark:border-zinc-700/60 dark:bg-zinc-800;
   }
 
   .input-base {
     @apply w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm
            text-gray-900 placeholder-gray-400
-           focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500
-           dark:border-white/10 dark:bg-white/5 dark:text-gray-100 dark:placeholder-gray-500
-           dark:focus:border-blue-400 dark:focus:bg-white/10;
+           focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-400
+           dark:border-zinc-700 dark:bg-zinc-800/80 dark:text-gray-100 dark:placeholder-zinc-500
+           dark:focus:border-zinc-500 dark:focus:bg-zinc-800;
   }
 
   .section-label {
