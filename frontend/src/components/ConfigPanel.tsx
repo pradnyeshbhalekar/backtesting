@@ -45,7 +45,7 @@ function Section({ icon: Icon, title, children, collapsible = false }: {
         className={`flex w-full items-center gap-2.5 px-5 py-3.5 ${collapsible ? 'cursor-pointer' : 'cursor-default'}`}
       >
         <Icon className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-zinc-500" />
-        <span className="flex-1 text-left text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
+        <span className="flex-1 text-left text-[11px] font-semibold uppercase tracking-widest text-gray-400 dark:text-zinc-500 sm:text-xs">
           {title}
         </span>
         {collapsible && (
@@ -84,13 +84,13 @@ export default function ConfigPanel({ config, onChange }: Props) {
     <>
       {/* Date Range */}
       <Section icon={Calendar} title="Date Range">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <p className="mb-1.5 text-[11px] text-gray-400 dark:text-zinc-500">Start</p>
+            <p className="mb-1.5 text-xs text-gray-400 dark:text-zinc-500">Start Date</p>
             <DatePicker value={config.start_date} onChange={v => onChange({ start_date: v })} max={config.end_date} />
           </div>
           <div>
-            <p className="mb-1.5 text-[11px] text-gray-400 dark:text-zinc-500">End</p>
+            <p className="mb-1.5 text-xs text-gray-400 dark:text-zinc-500">End Date</p>
             <DatePicker value={config.end_date} onChange={v => onChange({ end_date: v })} min={config.start_date} />
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function ConfigPanel({ config, onChange }: Props) {
       <Section icon={BarChart2} title="Strategy">
         <div className="space-y-3">
           <div>
-            <p className="mb-1.5 text-[11px] text-gray-400 dark:text-zinc-500">Rebalance Frequency</p>
+            <p className="mb-1.5 text-xs text-gray-400 dark:text-zinc-500">Rebalance Frequency</p>
             <Select
               value={config.rebalance_frequency ?? 'quarterly'}
               onChange={v => onChange({ rebalance_frequency: v as BacktestConfig['rebalance_frequency'] })}
@@ -114,7 +114,7 @@ export default function ConfigPanel({ config, onChange }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <p className="mb-1.5 text-[11px] text-gray-400 dark:text-zinc-500">Portfolio Size</p>
+              <p className="mb-1.5 text-xs text-gray-400 dark:text-zinc-500">Portfolio Size</p>
               <input
                 type="number" min={1} className="input-base"
                 value={config.portfolio_size ?? ''}
@@ -122,7 +122,7 @@ export default function ConfigPanel({ config, onChange }: Props) {
               />
             </div>
             <div>
-              <p className="mb-1.5 text-[11px] text-gray-400 dark:text-zinc-500">Capital (₹)</p>
+              <p className="mb-1.5 text-xs text-gray-400 dark:text-zinc-500">Capital (₹)</p>
               <input
                 type="number" min={0} className="input-base"
                 value={config.initial_capital ?? ''}
@@ -168,7 +168,7 @@ export default function ConfigPanel({ config, onChange }: Props) {
             ['pat_min', 'PAT Min (Cr)'],
           ].map(([key, label]) => (
             <div key={key}>
-              <p className="mb-1.5 text-[11px] text-gray-400 dark:text-zinc-500">{label}</p>
+              <p className="mb-1.5 text-xs text-gray-400 dark:text-zinc-500">{label}</p>
               <input
                 type="number" className="input-base"
                 value={(config.filters as Record<string, number | undefined> | undefined)?.[key] ?? ''}

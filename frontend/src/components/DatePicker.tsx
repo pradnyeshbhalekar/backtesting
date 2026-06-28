@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 
 interface Props {
@@ -28,26 +29,43 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
 
   const [open, setOpen] = useState(false)
   const [view, setView] = useState<Date>(selected ?? new Date(today.getFullYear(), today.getMonth(), 1))
-  const [dropUp, setDropUp] = useState(false)
-  const [alignRight, setAlignRight] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [pos, setPos] = useState({ top: 0, left: 0, openUp: false })
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const calendarRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+      if (
+        triggerRef.current && !triggerRef.current.contains(e.target as Node) &&
+        calendarRef.current && !calendarRef.current.contains(e.target as Node)
+      ) setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  useEffect(() => {
-    if (!open || !ref.current) return
-    const rect = ref.current.getBoundingClientRect()
-    const calendarHeight = 300
-    const calendarWidth = 256
-    setDropUp(rect.bottom + calendarHeight > window.innerHeight)
-    setAlignRight(rect.left + calendarWidth > window.innerWidth)
-  }, [open])
+  const handleOpen = () => {
+    if (!triggerRef.current) { setOpen(o => !o); return }
+    const rect = triggerRef.current.getBoundingClientRect()
+    const calW = 256
+    const calH = 300
+    const spaceBelow = window.innerHeight - rect.bottom
+    const openUp = spaceBelow < calH && rect.top > calH
+
+    // Align left edge of calendar with left edge of trigger, but clamp so it doesn't overflow right
+    let left = rect.left
+    if (left + calW > window.innerWidth - 8) {
+      left = window.innerWidth - calW - 8
+    }
+    if (left < 8) left = 8
+
+    setPos({
+      top: openUp ? rect.top - calH - 4 : rect.bottom + 4,
+      left,
+      openUp,
+    })
+    setOpen(o => !o)
+  }
 
   const year = view.getFullYear()
   const month = view.getMonth()
@@ -93,10 +111,11 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
     : 'Pick a date'
 
   return (
-    <div ref={ref} className="relative">
+    <div className="relative">
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setOpen(o => !o)}
+        onClick={handleOpen}
         className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-left focus:outline-none dark:border-zinc-700 dark:bg-zinc-800/80"
       >
         <span className={selected ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-zinc-500'}>
@@ -105,11 +124,12 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
         <Calendar className="h-3.5 w-3.5 shrink-0 text-gray-400 dark:text-zinc-500" />
       </button>
 
-      {open && (
-        <div className={`absolute z-50 w-64 rounded-xl border border-gray-200 bg-white p-3 shadow-xl dark:border-zinc-700 dark:bg-zinc-800 animate-fade-in
-          ${dropUp ? 'bottom-full mb-1' : 'top-full mt-1'}
-          ${alignRight ? 'right-0' : 'left-0'}
-        `}>
+      {open && createPortal(
+        <div
+          ref={calendarRef}
+          style={{ position: 'fixed', top: pos.top, left: pos.left, width: 256, zIndex: 9999 }}
+          className="rounded-xl border border-gray-200 bg-white p-3 shadow-2xl dark:border-zinc-700 dark:bg-zinc-800 animate-fade-in"
+        >
           {/* Month nav */}
           <div className="mb-3 flex items-center justify-between">
             <button
@@ -169,7 +189,8 @@ export default function DatePicker({ value, onChange, min, max }: Props) {
               )
             })}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
