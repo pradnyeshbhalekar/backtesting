@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Plus, Trash2, Calendar, BarChart2, Filter, ArrowUpDown, Layers } from 'lucide-react'
+import { ChevronDown, Plus, Trash2, Calendar, BarChart2, Filter, ArrowUpDown, Layers } from 'lucide-react'
 import type { BacktestConfig, RankingRule } from '../types'
 import Select from './Select'
 import DatePicker from './DatePicker'
