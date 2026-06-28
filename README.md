@@ -1,4 +1,4 @@
-# Qode — Equity Backtesting Platform
+Equity Backtesting Platform
 
 An end-to-end backtesting platform for fundamental equity strategies. Define filters, ranking rules, and position sizing logic — then simulate how that strategy would have performed historically against the Indian stock market, benchmarked against Nifty 50.
 
